@@ -4,24 +4,26 @@ Vores bachelorprojekt: et lille event-drevet system i .NET 9, der henter data fr
 
 Hele stacken kører i Docker, så du behøver ikke installere .NET lokalt for at prøve det.
 
-# Hvad du skal bruge
+## Hvad du skal bruge
 
 Docker Desktop med Compose v2, og Git. Det er det.
 
-# Sådan kommer du i gang
+(Hvis du vil køre en enkelt service uden for Docker, skal du også bruge .NET 9 SDK.)
+
+## Sådan kommer du i gang
 
 Klon repoet og hop ind i mappen:
 
-bash
+```bash
 git clone <repo-url>
 cd PBA_Projekt
-
+```
 
 Lav din egen `.env` ud fra skabelonen:
 
-bash
+```bash
 cp .env.example .env
-
+```
 
 Åbn `.env` og udfyld de tre vigtige nøgler:
 
@@ -31,13 +33,13 @@ cp .env.example .env
 
 Byg og start det hele:
 
-bash
+```bash
 docker compose up -d --build
-
+```
 
 Første gang tager det et par minutter. Bagefter kan du tjekke at containerne er oppe med `docker compose ps`.
 
-# Hvor ting kører
+## Hvor ting kører
 
 | Hvad                | Adresse                |
 |---------------------|------------------------|
@@ -53,19 +55,20 @@ Første gang tager det et par minutter. Bagefter kan du tjekke at containerne er
 
 Alle services har et `/health`-endpoint, hvis du vil tjekke om de svarer.
 
-# Tests
+## Tests
 
-bash
+```bash
 dotnet test
+```
 
+## Stop det igen
 
-# Stop det igen
-
-bash
+```bash
 docker compose down
-
+```
 
 Vil du også slette databaser og data, så tilføj `-v`:
 
-bash
+```bash
 docker compose down -v
+```
