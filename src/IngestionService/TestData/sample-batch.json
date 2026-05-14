@@ -1,0 +1,33 @@
+{
+  "channelId": 20,
+  "windowStart": "2026-04-22T06:00:00Z",
+  "windowEnd": "2026-04-22T14:00:00Z",
+  "feeds": {
+    "XYZ01_stoptime": [
+      { "timestamp": "2026-04-22T07:12:00Z", "reason": "Rullestop – banen kørte skæv", "durationMinutes": 18 },
+      { "timestamp": "2026-04-22T08:45:00Z", "reason": "Værktøjsskift",                 "durationMinutes": 7  },
+      { "timestamp": "2026-04-22T10:02:00Z", "reason": "Papirbrud i baneindføring",      "durationMinutes": 22 },
+      { "timestamp": "2026-04-22T11:30:00Z", "reason": "Værktøjsskift",                 "durationMinutes": 9  },
+      { "timestamp": "2026-04-22T12:48:00Z", "reason": "Banestyringsfejl",              "durationMinutes": 26 }
+    ],
+    "XYZ01_cnt": [
+      { "timestamp": "2026-04-22T06:30:00Z", "diff": 120 },
+      { "timestamp": "2026-04-22T08:00:00Z", "diff":  98 },
+      { "timestamp": "2026-04-22T09:30:00Z", "diff": 105 },
+      { "timestamp": "2026-04-22T11:00:00Z", "diff":  88 },
+      { "timestamp": "2026-04-22T12:30:00Z", "diff": 134 },
+      { "timestamp": "2026-04-22T13:30:00Z", "diff":  77 }
+    ],
+    "XYZ01_runtime": [
+      { "timestamp": "2026-04-22T06:30:00Z", "diff": 1700 },
+      { "timestamp": "2026-04-22T08:00:00Z", "diff": 1620 },
+      { "timestamp": "2026-04-22T09:30:00Z", "diff": 1545 },
+      { "timestamp": "2026-04-22T11:00:00Z", "diff": 1300 },
+      { "timestamp": "2026-04-22T12:30:00Z", "diff": 1720 },
+      { "timestamp": "2026-04-22T13:30:00Z", "diff":  900 }
+    ],
+    "XYZ01_porder": [
+      { "timestamp": "2026-04-22T06:00:00Z", "orderId": "PO-10234", "kvantum": 1200 }
+    ]
+  }
+}

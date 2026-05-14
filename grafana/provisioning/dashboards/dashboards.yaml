@@ -1,0 +1,16 @@
+# Provider-konfiguration der tillader Grafana at læse JSON-dashboards
+# direkte fra det monterede provisionerings-volume.
+apiVersion: 1
+
+providers:
+  - name: pba-dashboards
+    orgId: 1
+    folder: PBA
+    type: file
+    disableDeletion: false
+    editable: true
+    allowUiUpdates: true
+    updateIntervalSeconds: 30
+    options:
+      path: /etc/grafana/provisioning/dashboards
+      foldersFromFilesStructure: false

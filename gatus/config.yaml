@@ -1,0 +1,95 @@
+# ----------------------------------------------------------------------------
+# Centralt status-dashboard for det event-drevne Trendlog-system.
+# Konsumerer eksisterende /health-endpoints og infrastruktur-porte – uden
+# at duplikere logikken fra de in-process ASP.NET Core HealthChecks.
+#
+# BEMÆRK: Gatus' condition-syntaks anvender bare værdier på højresiden af '=='
+# (uden anførselstegn omkring strenge). Skrives højresiden med "...", fortolkes
+# anførselstegnene som en del af den forventede værdi, og sammenligningen
+# returnerer altid false. Reference: https://gatus.io/docs/endpoints/conditions
+# ----------------------------------------------------------------------------
+
+storage:
+  type: memory
+
+metrics: true
+
+ui:
+  title: "PBA – Trendlog Platform Status"
+  description: "Centralt status-dashboard for samtlige microservices og infrastruktur"
+  header: "PBA Bachelorprojekt – Driftsoverblik"
+
+endpoints:
+  # --------------------------------------------------------------------------
+  # Microservices – /health JSON-endpoint
+  # --------------------------------------------------------------------------
+  - name: api-gateway
+    group: microservices
+    url: http://api-gateway:8080/health
+    interval: 30s
+    conditions:
+      - "[STATUS] == 200"
+      - "[BODY].status == Healthy"
+
+  - name: ingestion-service
+    group: microservices
+    url: http://ingestion-service:8080/health
+    interval: 30s
+    conditions:
+      - "[STATUS] == 200"
+      - "[BODY].status == Healthy"
+
+  - name: analyzer-service
+    group: microservices
+    url: http://analyzer-service:8080/health
+    interval: 30s
+    conditions:
+      - "[STATUS] == 200"
+      - "[BODY].status == Healthy"
+
+  - name: ai-service
+    group: microservices
+    url: http://ai-service:8080/health
+    interval: 30s
+    conditions:
+      - "[STATUS] == 200"
+      - "[BODY].status == Healthy"
+
+  - name: alerting-service
+    group: microservices
+    url: http://alerting-service:8080/health
+    interval: 30s
+    conditions:
+      - "[STATUS] == 200"
+      - "[BODY].status == Healthy"
+
+  # --------------------------------------------------------------------------
+  # Infrastruktur – TCP-tjek på baggrundstjenesternes porte
+  # --------------------------------------------------------------------------
+  - name: rabbitmq-amqp
+    group: infrastructure
+    url: tcp://rabbitmq:5672
+    interval: 30s
+    conditions:
+      - "[CONNECTED] == true"
+
+  - name: rabbitmq-management
+    group: infrastructure
+    url: http://rabbitmq:15672
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"
+
+  - name: postgres-tcp
+    group: infrastructure
+    url: tcp://postgres:5432
+    interval: 30s
+    conditions:
+      - "[CONNECTED] == true"
+
+  - name: loki-ready
+    group: infrastructure
+    url: http://loki:3100/ready
+    interval: 60s
+    conditions:
+      - "[STATUS] == 200"

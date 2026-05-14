@@ -1,0 +1,283 @@
+/* Bevidst minimal styling – ingen Tailwind, ingen CSS-modul-runtime, intet
+   build-step udover Vite's standard. */
+
+:root {
+  --bg: #0f172a;
+  --surface: #1e293b;
+  --surface-alt: #334155;
+  --border: #475569;
+  --text: #e2e8f0;
+  --muted: #94a3b8;
+  --accent: #38bdf8;
+  --critical: #f87171;
+  --warning: #fbbf24;
+  --ok: #4ade80;
+  --pending: #a78bfa;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family:
+    "Inter", "Segoe UI", Roboto, system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 16px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 28px;
+  letter-spacing: -0.01em;
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--muted);
+  flex: 1;
+}
+
+.status {
+  font-size: 13px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.status--open {
+  border-color: var(--ok);
+  color: var(--ok);
+}
+
+.status--connecting {
+  border-color: var(--pending);
+  color: var(--pending);
+}
+
+.status--error {
+  border-color: var(--critical);
+  color: var(--critical);
+}
+
+.empty {
+  color: var(--muted);
+  padding: 32px;
+  text-align: center;
+  background: var(--surface);
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--surface);
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 14px;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+th {
+  background: var(--surface-alt);
+  color: var(--muted);
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+.severity-high td:nth-child(2) {
+  color: var(--critical);
+  font-weight: 600;
+}
+
+.severity-medium td:nth-child(2) {
+  color: var(--warning);
+  font-weight: 600;
+}
+
+.severity-low td:nth-child(2) {
+  color: var(--ok);
+  font-weight: 600;
+}
+
+.severity-unknown td:nth-child(2) {
+  color: var(--pending);
+  font-weight: 600;
+}
+
+/* AI-severity-farvekodning, jf. Fase C. Den AI-tildelte severity er
+   uafhængig af regel-baserede severity (kolonne 2) og vises i den nye
+   kolonne 7. Farverne genbruger paletten for at undgå visuel støj. */
+.ai-severity-low {
+  color: var(--ok);
+  font-weight: 600;
+}
+
+.ai-severity-medium {
+  color: var(--warning);
+  font-weight: 600;
+}
+
+.ai-severity-high {
+  color: var(--critical);
+  font-weight: 600;
+}
+
+.ai-severity-critical {
+  color: var(--critical);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.ai-severity-none {
+  color: var(--muted);
+}
+
+/* -- Drill-down (CQRS audit-projektion) -----------------------------------
+   Hver hovedrække er klikbar og folder ud til at vise alle AI-klassifikationer
+   for batchen, hentet on-demand fra /alerts/{id}/classifications.
+   Hovedrækken har en chevron yderst til venstre der vender 90° når åben.
+-------------------------------------------------------------------------- */
+
+.col-expand {
+  width: 28px;
+  text-align: center;
+  user-select: none;
+}
+
+.alert-row {
+  cursor: pointer;
+  transition: background 120ms ease;
+}
+
+.alert-row:hover,
+.alert-row:focus-visible {
+  background: rgba(56, 189, 248, 0.06);
+  outline: none;
+}
+
+.alert-row--expanded {
+  background: rgba(56, 189, 248, 0.08);
+}
+
+.chevron {
+  display: inline-block;
+  color: var(--muted);
+  transition: transform 150ms ease;
+  font-size: 12px;
+}
+
+.chevron--open {
+  transform: rotate(90deg);
+  color: var(--accent);
+}
+
+.drill-down td {
+  background: #0b1220;
+  padding: 16px 24px;
+  border-bottom: 2px solid var(--border);
+}
+
+.drill-down__intro {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.drill-down__intro code {
+  background: var(--surface);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-family: ui-monospace, Consolas, "SFMono-Regular", monospace;
+  font-size: 12px;
+}
+
+.drill-down__status {
+  margin: 0;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.drill-down__status--error {
+  color: var(--critical);
+  font-style: normal;
+}
+
+.drill-down__table {
+  width: 100%;
+  border-collapse: collapse;
+  background: transparent;
+  border-radius: 0;
+  overflow: visible;
+  font-size: 13px;
+}
+
+.drill-down__table th {
+  background: transparent;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  font-size: 10px;
+}
+
+.drill-down__table td {
+  border-bottom: 1px solid rgba(71, 85, 105, 0.4);
+  padding: 8px 10px;
+  background: transparent;
+}
+
+.drill-down__row--winner {
+  background: rgba(74, 222, 128, 0.04);
+}
+
+.badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.badge--match {
+  background: rgba(74, 222, 128, 0.12);
+  color: var(--ok);
+  border: 1px solid rgba(74, 222, 128, 0.35);
+}

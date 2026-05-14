@@ -1,0 +1,25 @@
+# .NET build artefacts
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+# Rider / Visual Studio Code
+.idea/
+.vscode/
+
+# Secrets and local environment overrides
+.env
+*.env.local
+appsettings.*.local.json
+
+# Docker volumes (mounted to the workspace during local exploration)
+.docker-data/
+
+# OS noise
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

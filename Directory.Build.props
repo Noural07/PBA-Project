@@ -1,0 +1,42 @@
+<Project>
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
+
+    <!--
+      Bevidst suppression af analyzer-regler, der vurderes uhensigtsmæssige
+      for nærværende projekt:
+
+        CA1031 – Catch general exception types.
+                 Anvendes intentionelt i Program.cs' top-level try/catch for at
+                 sikre at *enhver* startup-fejl logges via Serilog Fatal-niveau
+                 inden processen termineres. Dette er det dokumenterede mønster
+                 fra Microsoft Worker Service-skabelonen.
+
+        CA1303 – Do not pass literals as localized parameters.
+                 Platformen er ikke lokaliseret. Log-strenge er bevidst engelsk
+                 maskinlæsbar tekst, som matches af LogQL i Grafana.
+
+        CA1716 – Identifiers should not match keywords.
+                 Navnerum-segmentet 'Shared' kolliderer med VB.NET's 'Shared'-
+                 keyword, men Pba.Shared-biblioteket publiceres aldrig som
+                 NuGet-pakke til cross-language-konsumption.
+
+        CA1848 – Use the LoggerMessage delegates.
+                 LoggerMessage source-generators bruges først i hot paths i
+                 Phase 5/6. Phase 1-3 fokuserer på domæne-korrekthed.
+
+        CA2007 – Do not directly await a Task.
+                 ASP.NET Core 8/9 kører ikke længere med en SynchronizationContext,
+                 så ConfigureAwait(false) er ikke nødvendigt og tilføjer kun støj.
+    -->
+    <NoWarn>$(NoWarn);CA1031;CA1303;CA1716;CA1848;CA2007</NoWarn>
+  </PropertyGroup>
+
+</Project>
