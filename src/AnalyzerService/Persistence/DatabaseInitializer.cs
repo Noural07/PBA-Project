@@ -9,18 +9,10 @@ using Microsoft.Extensions.Logging;
 namespace AnalyzerService.Persistence;
 
 /// <summary>
-/// <see cref="IHostedService"/> der ved opstart sikrer, at databaseskemaet
-/// findes. I Phase 3 anvendes <c>EnsureCreatedAsync</c> som let-vægts
-/// substitut for en fuld migration-historik. Tilgangen er bevidst valgt for
-/// at holde Phase 3 fokuseret på domænelogik og event-flow; en egentlig
-/// migrations-pipeline introduceres i en senere fase, hvorefter dette
-/// hosted service udskiftes med <c>db.Database.MigrateAsync()</c>.
+/// Hosted service der ved opstart kalder <c>EnsureCreatedAsync</c> (kun i Development).
+/// Erstattes med <c>MigrateAsync</c> når en migrations-pipeline introduceres.
 /// </summary>
-/// <remarks>
-/// Tilgangen er kun aktiveret i <c>Development</c>-miljøet, jf. plan §7.3
-/// (DoD: "automatisk migration-run ved opstart (kun i Development)").
-/// I produktion forventes skemaet at være migreret eksternt af en CI-pipeline.
-/// </remarks>
+
 public sealed class DatabaseInitializer : IHostedService
 {
     private readonly IServiceProvider _services;

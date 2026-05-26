@@ -9,19 +9,9 @@ using Xunit;
 namespace AnalyzerService.Tests;
 
 /// <summary>
-/// Enhedstest for <see cref="CriticalRuleEvaluator"/>. Klassen er
-/// regelmotorens centrale forretningslogik og isoleres her fra både
-/// HTTP-, RabbitMQ- og PostgreSQL-afhængigheder, hvilket muliggør hurtig
-/// og deterministisk test af de tre kritikalitetsregler:
-/// <c>DowntimeExceedsThreshold</c>, <c>CriticalReasonObserved</c> og
-/// <c>OrderCompletionBelowThreshold</c>.
+/// Enhedstest for <see cref="CriticalRuleEvaluator"/> — isoleret fra HTTP, RabbitMQ og PostgreSQL.
 /// </summary>
-/// <remarks>
-/// Testene følger Arrange–Act–Assert mønstret. Tærskler injiceres via
-/// <see cref="IOptions{T}"/>, så hver test kan eksponere den konkrete
-/// konfiguration den hviler på, og kan eksekveres parallelt uden delt
-/// tilstand.
-/// </remarks>
+
 public sealed class CriticalRuleEvaluatorTests
 {
     private static CriticalRuleEvaluator CreateSut(CriticalRuleOptions? overrides = null)

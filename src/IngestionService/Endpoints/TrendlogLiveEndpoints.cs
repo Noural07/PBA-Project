@@ -13,32 +13,20 @@ using Microsoft.Extensions.Logging;
 namespace IngestionService.Endpoints;
 
 /// <summary>
-/// Live-endpoints der kalder det reelle Trendlog-API (Fase A). Endpoints
-/// returnerer rå JSON, så udvikleren kan inspicere record-strukturen direkte
-/// i Swagger og bekræfte, at points og operatør-kommentarer kommer ind, før
-/// data normaliseres gennem pipelinen.
+/// Live-endpoints mod Trendlog-API'et — returnerer rå JSON til inspektion i Swagger.
 /// </summary>
+
 public static class TrendlogLiveEndpoints
 {
     /// <summary>
-    /// Default-body til live-endpointet for kanal 20.
-    /// <para>
-    /// Empirisk verificeret i en separat node-server-implementation: <c>viewid=9668</c>
-    /// er kanalens hovedvisning og skal anvendes på <em>alle</em> feeds — ikke kun
-    /// stoptime. Tidligere antagelse om at <c>viewid=0</c> betød "standard-aggregering"
-    /// for diff-feeds var forkert; Trendlog returnerer tomme points-arrays når
-    /// kanal-specifik visning ikke er sat.
-    /// </para>
-    /// <para>
-    /// Aggregeringsmetoden afviger pr. feed:
+    /// Default feed-anmodninger for kanal 20. <c>viewid=9668</c> er påkrævet på alle feeds.
     /// <list type="bullet">
     ///   <item><description><c>stoptime</c>: <c>method=none</c> (rå event-points med kommentar pr. stop).</description></item>
-    ///   <item><description><c>cnt</c>: <c>method=diff</c> (produktion pr. interval).</description></item>
-    ///   <item><description><c>runtime</c>: <c>method=diff</c> (køretid pr. interval).</description></item>
+    ///   <item><description><c>cnt</c> / <c>runtime</c>: <c>method=diff</c> (produktion/køretid pr. interval).</description></item>
     ///   <item><description><c>porder</c>: <c>method=none</c> (ordrekontekst som rå dict-comment).</description></item>
     /// </list>
-    /// </para>
     /// </summary>
+
     public static readonly IReadOnlyList<TrendlogFeedRequest> Channel20DefaultFeeds = new[]
     {
         new TrendlogFeedRequest { FeedId = "XYZ01_stoptime", Method = "none", Noneg = false, ViewId = 9668 },

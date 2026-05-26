@@ -7,15 +7,10 @@ using System.Threading.Tasks;
 namespace IngestionService.Trendlog;
 
 /// <summary>
-/// Abstraktion over Trendlog-API'ets feeds-endpoint. Implementationen
-/// indkapsler:
-/// <list type="bullet">
-///   <item><description>HTTP-verbet (<c>POST</c>) og bearer-autentificering.</description></item>
-///   <item><description>Den særegne dato-konvention hvor <c>start</c> = nyeste, <c>end</c> = ældste.</description></item>
-///   <item><description>Det særegne dato-format <c>dd-MM-yyyy</c> i query-parametrene.</description></item>
-///   <item><description>Body-shapen: et JSON-array af <see cref="TrendlogFeedRequest"/>-objekter.</description></item>
-/// </list>
+/// Abstraktion over Trendlog-API'ets feeds-endpoint (POST, <c>dd-MM-yyyy</c>-datoformat,
+/// <c>start</c> = nyeste dato, <c>end</c> = ældste).
 /// </summary>
+
 public interface ITrendlogClient
 {
     /// <summary>

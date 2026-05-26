@@ -37,13 +37,7 @@ try
 
     builder.Services.AddPlatformHealthChecks(builder.Configuration);
 
-    // ----------------------------------------------------------------------
-    // Phase 4 – CORS.
-    // Læser ALERTING_FRONTEND_ORIGIN først fra miljøvariabler (foretrukne for
-    // konfiguration af hemmeligheder/topologi i container-miljøer) og dernæst
-    // fra appsettings (Cors:AllowedOrigins). Default er Vite's dev-port, så
-    // git-clone + dotnet run virker uden ekstra opsætning.
-    // ----------------------------------------------------------------------
+    // CORS: læser ALERTING_FRONTEND_ORIGIN fra miljøvariabel, dernæst appsettings, ellers Vite dev-default.
     var allowedOrigin = Environment.GetEnvironmentVariable("ALERTING_FRONTEND_ORIGIN")
         ?? builder.Configuration["Cors:AllowedOrigins"]
         ?? "http://localhost:5173";
@@ -61,15 +55,8 @@ try
         });
     });
 
-    // ----------------------------------------------------------------------
-    // Fase C – persistens af AI-klassifikationer.
-    //
-    // AlertingService overtager rollen som langtidsholdbar audit-log for
-    // StopReasonClassified-events. Persisteringen er additiv til den
-    // eksisterende in-memory ring-buffer og påvirker ikke SSE-streamen:
-    // hvis Postgres er midlertidigt utilgængeligt, retry'er MassTransit-
-    // pipelinen og frontend'en modtager alarmen uændret.
-    // ----------------------------------------------------------------------
+    // audit-persistens: additiv til ring-bufferen, påvirker ikke SSE-streamen.
+
     var connectionString = builder.Configuration.GetConnectionString("Postgres")
         ?? "Host=postgres;Port=5432;Database=pba;Username=pba;Password=pba";
 
@@ -78,9 +65,9 @@ try
 
     builder.Services.AddHostedService<DatabaseInitializer>();
 
-    // ----------------------------------------------------------------------
-    // Phase 4 – Domain & messaging.
-    // ----------------------------------------------------------------------
+
+    // Domain & messaging.
+    
     builder.Services.AddSingleton<AlertStore>();
 
     builder.Services.AddPlatformMassTransit(builder.Configuration, mt =>

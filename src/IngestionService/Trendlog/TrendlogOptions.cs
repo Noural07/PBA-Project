@@ -3,14 +3,8 @@ using System.ComponentModel.DataAnnotations;
 namespace IngestionService.Trendlog;
 
 /// <summary>
-/// Konfigurations-binding for Trendlog-integrationen.
-/// <para>
-/// <see cref="BaseUrl"/> indlæses fra <c>appsettings.json</c> sektionen
-/// <c>Trendlog</c> (kan overrides via miljøvariablen <c>Trendlog__BaseUrl</c>).
-/// <see cref="ApiKey"/> indlæses udelukkende fra miljøvariablen
-/// <c>TRENDLOG_API_KEY</c> for at sikre at hemmeligheder aldrig committes til
-/// kildekontrol, jf. projektets sikkerhedsdirektiver.
-/// </para>
+/// Konfiguration for Trendlog-integrationen (<c>Trendlog</c>-sektionen).
+/// API-nøgle hentes fra miljøvariablen <c>TRENDLOG_API_KEY</c>.
 /// </summary>
 public sealed class TrendlogOptions
 {

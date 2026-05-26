@@ -14,26 +14,9 @@ using Microsoft.Extensions.Logging;
 namespace AlertingService.Endpoints;
 
 /// <summary>
-/// Eksponerer <c>GET /alerts/stream</c> som en HTTP/1.1 Server-Sent-Events-
-/// kanal, der tildeler hver tilkoblet klient et øjeblikkeligt snapshot af de
-/// seneste konsoliderede alarmer (op til <see cref="AlertStore"/>'s kapacitet)
-/// og dernæst skubber alle nye alarmer i realtid.
+/// Eksponerer <c>GET /alerts/stream</c> som SSE — sender snapshot ved tilkobling og skubber nye alarmer i realtid.
 /// </summary>
-/// <remarks>
-/// <para>
-/// SSE er bevidst valgt frem for WebSockets eller direkte RabbitMQ-eksponering.
-/// SSE er en standard del af enhver moderne browser, kræver ingen
-/// klient-bibliotek og er one-way, hvilket matcher kontrakten
-/// "AlertingService -> Frontend" perfekt. Ved at lade <c>AlertingService</c>
-/// abstrahere broker'en undgås tæt kobling mellem browser og RabbitMQ, og
-/// frontend'en behøver ingen credentials til broker-klyngen.
-/// </para>
-/// <para>
-/// Endpointet er ikke autentificeret i Phase 4 og er udelukkende beregnet
-/// til lokal demonstration. CORS-policyen begrænser dog hvilken origin der
-/// kan koble sig på (jf. <c>ALERTING_FRONTEND_ORIGIN</c>).
-/// </para>
-/// </remarks>
+
 public static class AlertStreamEndpoints
 {
     private static readonly JsonSerializerOptions Json = new()
@@ -79,15 +62,10 @@ public static class AlertStreamEndpoints
             // ikke timeoutter en stille SSE-forbindelse.
             using var keepAlive = new PeriodicTimer(TimeSpan.FromSeconds(15));
 
-            // BÅDE readTask OG keepAliveTask hejses ud af løkken og
-            // genoprettes først, når de selv vinder Task.WhenAny. Mønstret er
-            // krævet for to ortogonale grunde:
-            //   (1) ChannelReader.ReadAsync må ikke afløses, før den læser ér
-            //       konsumeret, ellers kan en alarm-leverance gå tabt.
-            //   (2) PeriodicTimer.WaitForNextTickAsync MÅ ikke kaldes mens et
-            //       tidligere kald stadig er pending; ellers kastes
-            //       InvalidOperationException ("Operation is not valid …").
-            //       Bug observeret i Phase 4-røg-test 2026-04-30.
+            // readTask og keepAliveTask hejses ud af løkken og genoprettes først når de vinder Task.WhenAny.
+            // (1) ReadAsync må ikke afløses før dens værdi er konsumeret — alarm-leverance kan gå tabt.
+            // (2) WaitForNextTickAsync må ikke kaldes mens et kald er pending — kaster InvalidOperationException.
+           
             var readTask = reader.ReadAsync(cancellationToken).AsTask();
             var keepAliveTask = keepAlive.WaitForNextTickAsync(cancellationToken).AsTask();
 

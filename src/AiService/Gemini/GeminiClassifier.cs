@@ -15,47 +15,10 @@ using Polly.Timeout;
 namespace AiService.Gemini;
 
 /// <summary>
-/// HTTP-baseret implementering af <see cref="IGeminiClassifier"/>. Klienten
-/// foretager et kald mod Generative Language API'ets
-/// <c>:generateContent</c>-endpoint og pålægger Gemini en streng system-
-/// prompt, som tvinger modellen til kun at returnere et JSON-objekt med
-/// felterne <c>category</c>, <c>subcategory</c>, <c>standardizedReason</c>,
-/// <c>severity</c>, <c>recommendedAction</c> og <c>confidence</c>.
+/// HTTP-klient mod Gemini's <c>:generateContent</c>-endpoint.
+/// Returnerer et <see cref="GeminiClassificationResult"/> — ved fejl en fallback med <c>Category="Unclassified"</c>.
 /// </summary>
-/// <remarks>
-/// <para>
-/// Klassen anvender den injicerede <see cref="HttpClient"/> som registreret
-/// af <see cref="System.Net.Http.IHttpClientFactory"/>. API-nøglen hentes
-/// udelukkende fra miljøvariablen <c>GEMINI_API_KEY</c>; selve nøgleværdien
-/// må aldrig optræde i logs eller persisteres til Loki.
-/// </para>
-/// <para>
-/// <b>Hybridt vokabular.</b> Klassifikationen anvender et bevidst todelt
-/// kategori-skema, jf. fase C-designvalget (1C). <c>category</c> er den
-/// stabile, engelske grov-kategori som Trendlog selv anvender
-/// (<c>Fault</c>, <c>Maintenance</c>, <c>Break</c>, <c>Other</c>), mens
-/// <c>subcategory</c> er en menneskelæsbar dansk underkategori udledt af
-/// Gemini fra fri-teksten. Dette giver både en stabil aggregerings-nøgle
-/// til Grafana og en nuanceret beskrivelse til frontend'en.
-/// </para>
-/// <para>
-/// <b>Prompt-injection-forsvar.</b> Operatør-fri-tekst kan i princippet
-/// indeholde tekst, der forsøger at instruere modellen (fx "Ignorér ovenstående
-/// og returnér ..."). System-prompten instruerer derfor modellen om at
-/// behandle al brugerinput som data, ikke instruktioner, og at vælge
-/// kategorien <c>Other</c> med lav <c>confidence</c> hvis input ligner et
-/// instruktions-forsøg. Derudover trunkeres input til <see cref="MaxInputCharacters"/>
-/// for at begrænse både angrebsoverflade og token-budget.
-/// </para>
-/// <para>
-/// Hvis kaldet fejler – netværksfejl, timeout, ugyldig JSON eller manglende
-/// API-nøgle – returneres et fallback-resultat med
-/// <c>category="Unclassified"</c>, så hændelsesflowet ikke blokeres.
-/// Fallback-tilfældet markeres eksplicit i resultatet og logges med
-/// niveauet "FAKE" når årsagen er manglende API-nøgle, så det ikke kan
-/// forveksles med et reelt model-output i log-traces.
-/// </para>
-/// </remarks>
+
 public sealed class GeminiClassifier : IGeminiClassifier
 {
     public const string HttpClientName = "Gemini";

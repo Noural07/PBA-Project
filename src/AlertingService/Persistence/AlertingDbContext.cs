@@ -3,18 +3,9 @@ using Microsoft.EntityFrameworkCore;
 namespace AlertingService.Persistence;
 
 /// <summary>
-/// EF Core DbContext for AlertingService' audit-kontekst. Indeholder
-/// for nuværende ét aggregat — <see cref="ClassifiedStopReasons"/> — som
-/// langtidsholdbart auditerbart spor over alle AI-klassifikationer
-/// streamet gennem systemet.
+/// EF Core DbContext for AlertingService — indeholder audit-tabellen <c>classified_stop_reasons</c>.
 /// </summary>
-/// <remarks>
-/// Konteksten er en bevidst smal projektion: domæneaggregaterne for
-/// kritiske alarmer ejes fortsat af <c>AnalyzerService</c>, og
-/// AlertingService persisterer udelukkende det der ikke i forvejen
-/// er ejet af en anden service. Dette undgår dobbeltlagring og
-/// holder bounded contexts adskilt.
-/// </remarks>
+
 public sealed class AlertingDbContext : DbContext
 {
     public AlertingDbContext(DbContextOptions<AlertingDbContext> options)

@@ -7,20 +7,13 @@ using Microsoft.Extensions.Logging;
 namespace IngestionService.Trendlog;
 
 /// <summary>
-/// Konverterer det rå <see cref="JsonElement"/>-respons fra Trendlog til
-/// projektets interne <see cref="TrendlogBatchPayload"/>-form. Mapperen er
-/// designet til at være tolerant over for de mange små afvigelser, der
-/// observeres i live-feeds:
+/// Mapper Trendlogs rå JSON til <see cref="TrendlogBatchPayload"/>. Tolerant over for observerede live-afvigelser:
 /// <list type="bullet">
-///   <item><description>Manglende feeds (ikke alle kanaler har alle fire test-feeds).</description></item>
-///   <item><description>Tomme <c>points</c>-arrays (en feed kan have nul målinger i et tidsvindue).</description></item>
-///   <item><description>Numeriske værdier leveret som strings (<c>"0"</c>, <c>"398"</c>, <c>"-260"</c>).</description></item>
-///   <item><description>Tidsstempler i formatet <c>"yyyy-MM-dd HH:mm:ss.fff"</c> uden zone-suffix.</description></item>
-///   <item><description>Operatør-kommentarer på Python-dict-stringificeret form (kun stoptime-feedet).</description></item>
+///   <item><description>Manglende eller tomme feeds.</description></item>
+///   <item><description>Numeriske værdier som strings (<c>"398"</c>, <c>"-260"</c>).</description></item>
+///   <item><description>Tidsstempler uden zone-suffix (<c>"yyyy-MM-dd HH:mm:ss.fff"</c>).</description></item>
+///   <item><description>Operatør-kommentarer som Python-dict-strings (stoptime-feed).</description></item>
 /// </list>
-/// Mappen logger advarsler ved hver dataanomali, men kaster ikke exception
-/// — dette holder pipelinen kørende selv ved partielle datafejl, hvilket er
-/// nødvendigt under demonstrationen, jf. projektregel om production-readiness.
 /// </summary>
 public sealed class TrendlogResponseMapper : ITrendlogResponseMapper
 {
@@ -43,17 +36,15 @@ public sealed class TrendlogResponseMapper : ITrendlogResponseMapper
     private const string FeedNameOrder = "XYZ01_porder";
 
     /// <summary>
-    /// Mulige feltnavne der bærer feedets <em>tekstuelle</em> identifier i
-    /// Trendlogs respons (fx <c>"XYZ01_stoptime"</c>). Prioriteret rækkefølge:
+    /// Feltnavne der kan bære feed-identifikatoren. Prioriteret rækkefølge:
     /// <list type="number">
-    ///   <item><description><c>name</c> — Trendlogs faktisk anvendte felt for tekstuelt feed-navn.</description></item>
+    ///   <item><description><c>name</c> — Trendlogs faktiske felt for tekstuelt feed-navn.</description></item>
     ///   <item><description><c>feedid</c> — echo af request-feltet, observeret i ældre versioner.</description></item>
-    ///   <item><description><c>feed_name</c> — alternativ navnevariant.</description></item>
+    ///   <item><description><c>feed_name</c> — alternativ variant.</description></item>
     /// </list>
-    /// Bemærk: feltet <c>feed_id</c> bevidst <em>udeladt</em>, da det indeholder
-    /// en numerisk identifier (fx <c>"30119"</c>) — ikke det tekstuelle navn —
-    /// og ville få mapperens switch til at fejle uigenkendeligt.
+    /// OBS: <c>feed_id</c> er udeladt — det er en numerisk id (<c>"30119"</c>), ikke et tekstuelt navn.
     /// </summary>
+
     private static readonly string[] FeedNameKeys =
     [
         "name",

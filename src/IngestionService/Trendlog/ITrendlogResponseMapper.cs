@@ -4,11 +4,7 @@ using System.Text.Json;
 namespace IngestionService.Trendlog;
 
 /// <summary>
-/// Abstraktion for mapping fra Trendlogs rå JSON-respons til projektets
-/// interne <see cref="TrendlogBatchPayload"/>. Adskillelsen muliggør
-/// enheds-test af mapping-logikken uden at skulle starte ASP.NET-pipelinen
-/// op, og lader endpointet substitueres med en in-memory-implementering
-/// under integrationstest af den efterfølgende normalisering.
+/// Mapper Trendlogs rå JSON-respons til <see cref="TrendlogBatchPayload"/>.
 /// </summary>
 public interface ITrendlogResponseMapper
 {

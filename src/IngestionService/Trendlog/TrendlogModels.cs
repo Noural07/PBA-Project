@@ -5,17 +5,9 @@ using System.Text.Json.Serialization;
 namespace IngestionService.Trendlog;
 
 /// <summary>
-/// Forenklet DTO-model for et batch-respons fra Trendlog-API'et. Modellen er
-/// designet til at kunne udfyldes både af et reelt API-kald (Phase 5/6) og
-/// af det simulerede payload, der i Phase 3 sendes via
-/// <c>POST /ingestion/simulate</c>.
+/// Internt batch-DTO der samler alle Trendlog-feeds i én konvolut til normalisering.
 /// </summary>
-/// <remarks>
-/// Trendlog-API'et returnerer i praksis ét feed-array pr. forespørgsel; her er
-/// flere feeds samlet i én konvolut for at lette test-orchestrering. Ved overgang
-/// til reel integration udskiftes deserialisering, mens normaliseringslogikken
-/// i <see cref="Pipeline.MeasurementNormalizer"/> bevares uændret.
-/// </remarks>
+
 public sealed class TrendlogBatchPayload
 {
     [JsonPropertyName("channelId")]

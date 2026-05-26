@@ -10,26 +10,10 @@ using Pba.Shared.Contracts.V1;
 namespace AlertingService.Domain;
 
 /// <summary>
-/// Tråd-sikker, in-memory ring-buffer over de seneste konsoliderede alarmer.
-/// Holder en kort, fast historik (default 50) og fungerer samtidig som pub/sub-
-/// kanal for SSE-abonnenter. Alarmer joines via <c>CorrelationId</c> imellem
-/// <see cref="CriticalAlertTriggered"/> og <see cref="StopReasonClassified"/>.
+/// Tråd-sikker in-memory ring-buffer over de seneste konsoliderede alarmer.
+/// Joiner <see cref="CriticalAlertTriggered"/> og <see cref="StopReasonClassified"/> via <c>CorrelationId</c>.
 /// </summary>
-/// <remarks>
-/// <para>
-/// <b>Designvalg.</b> En ægte read-model i en relationel tabel er bevidst
-/// fravalgt i Phase 4. Kravet er, at frontend'en ser de seneste 50 alarmer i
-/// det aktuelle udsnit, og at en SSE-stream skubber nye alarmer ud i realtid.
-/// En ring-buffer i RAM er den simpleste og hurtigste opfyldelse af det krav.
-/// Ulempen — at alarmhistorikken nulstilles ved restart — accepteres som en
-/// bevidst begrænsning og dokumenteres i fase-rapporten.
-/// </para>
-/// <para>
-/// <b>Trådsikkerhed.</b> En ekstern <see cref="ReaderWriterLockSlim"/> ville
-/// være over-engineering for de små collection-størrelser; i stedet anvendes
-/// en intern lock, hvor alle skriveoperationer er O(1) eller amortized O(1).
-/// </para>
-/// </remarks>
+
 public sealed class AlertStore : IDisposable
 {
     private readonly int _capacity;

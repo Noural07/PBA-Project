@@ -11,12 +11,10 @@ using Pba.Shared.Contracts.V1;
 namespace AnalyzerService.Consumers;
 
 /// <summary>
-/// Konsumerer <see cref="MeasurementReceived"/>-events fra RabbitMQ. Pr.
-/// event:
+/// Konsumerer <see cref="MeasurementReceived"/>-events og:
 /// <list type="number">
-///   <item><description>Beriger logningen med <c>CorrelationId</c> via Serilog <c>LogContext</c>.</description></item>
 ///   <item><description>Evaluerer kritikalitetsreglerne via <see cref="CriticalRuleEvaluator"/>.</description></item>
-///   <item><description>Persisterer målingen, dens stopårsager og evt. <see cref="CriticalAlert"/> i én transaktion.</description></item>
+///   <item><description>Persisterer måling, stopårsager og evt. <see cref="CriticalAlert"/> i én transaktion.</description></item>
 ///   <item><description>Publicerer <see cref="CriticalAlertTriggered"/> hvis evalueringen var kritisk.</description></item>
 /// </list>
 /// </summary>

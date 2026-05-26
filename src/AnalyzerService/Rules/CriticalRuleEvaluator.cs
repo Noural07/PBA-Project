@@ -7,15 +7,12 @@ using Pba.Shared.Contracts.V1;
 namespace AnalyzerService.Rules;
 
 /// <summary>
-/// Domæne-regelmotor der evaluerer en indkommen <see cref="MeasurementReceived"/>
-/// mod tre uafhængige kritikalitetsregler:
+/// Evaluerer en <see cref="MeasurementReceived"/> mod tre kritikalitetsregler:
 /// <list type="number">
 ///   <item><description><b>DowntimeExceedsThreshold</b> – samlet nedetid over tærsklen.</description></item>
-///   <item><description><b>CriticalReasonObserved</b> – mindst én aggregeret stopårsag matcher en kritisk-keyword.</description></item>
-///   <item><description><b>OrderCompletionBelowThreshold</b> – kendt ordres færdiggørelsesgrad er under tærsklen.</description></item>
+///   <item><description><b>CriticalReasonObserved</b> – mindst én stopårsag matcher et kritisk keyword.</description></item>
+///   <item><description><b>OrderCompletionBelowThreshold</b> – ordres færdiggørelsesgrad under tærsklen.</description></item>
 /// </list>
-/// Klassen er ren og uden infrastruktur-afhængigheder, hvilket muliggør
-/// enheds-test i Phase 5.
 /// </summary>
 public sealed class CriticalRuleEvaluator
 {

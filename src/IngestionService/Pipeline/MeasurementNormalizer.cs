@@ -10,14 +10,12 @@ using Pba.Shared.Contracts.V1;
 namespace IngestionService.Pipeline;
 
 /// <summary>
-/// Normaliserer et råt Trendlog-batch til de interne kontrakter
-/// <see cref="MeasurementReceived"/> og <see cref="OperatorCommentRegistered"/>.
-/// Implementerer trinene 1–4 i projektplanens afsnit 5.3:
+/// Normaliserer et råt Trendlog-batch til <see cref="MeasurementReceived"/> og <see cref="OperatorCommentRegistered"/>:
 /// <list type="number">
-///   <item><description>Konvertering af rå feed-respons til interne DTO'er.</description></item>
-///   <item><description>Gruppering af stop-events efter <c>reason</c> med summeret varighed.</description></item>
-///   <item><description>Beregning af <c>totalDowntime</c> og <c>topReason</c>.</description></item>
-///   <item><description>Ordrekobling og udregning af <c>completionPct</c>.</description></item>
+///   <item><description>Aggregér produktion og runtime fra diff-feeds.</description></item>
+///   <item><description>Gruppér stop-events efter årsag med summeret varighed.</description></item>
+///   <item><description>Beregn <c>totalDowntime</c> og <c>topReason</c>.</description></item>
+///   <item><description>Kobl ordrekontekst og beregn <c>completionPct</c>.</description></item>
 /// </list>
 /// </summary>
 public sealed class MeasurementNormalizer : IMeasurementNormalizer

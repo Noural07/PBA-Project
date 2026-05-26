@@ -35,12 +35,12 @@ try
     // skal ikke ramme databasen — det ville være en kunstig kobling.
     builder.Services.AddPlatformHealthChecks(builder.Configuration, requirePostgres: false);
 
-    // Phase 3 – Pipeline & messaging.
+    //  Pipeline & messaging.
     builder.Services.AddSingleton<IMeasurementNormalizer, MeasurementNormalizer>();
     builder.Services.AddScoped<IngestionPublisher>();
     builder.Services.AddPlatformMassTransit(builder.Configuration);
 
-    // Fase A – Live Trendlog-integration (typed HttpClient + options-validering).
+    // Live Trendlog-integration (typed HttpClient + options-validering).
     builder.Services.AddTrendlogIntegration(builder.Configuration);
 
     var app = builder.Build();

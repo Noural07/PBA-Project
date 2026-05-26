@@ -3,27 +3,9 @@ using System;
 namespace AlertingService.Persistence;
 
 /// <summary>
-/// Audit-projektion af et indkommet <c>StopReasonClassified</c>-event.
-/// Persisteres i Postgres-tabellen <c>classified_stop_reasons</c> for at
-/// give et fuldt sporbart, langtidsholdbart historisk register over alle
-/// AI-klassifikationer der er strømmet gennem pipelinen — supplerende den
-/// in-memory ring-buffer der serverer SSE-frontend'en.
+/// Audit-entitet der persisterer ét <c>StopReasonClassified</c>-event i <c>classified_stop_reasons</c>.
 /// </summary>
-/// <remarks>
-/// <para>
-/// Tabellen er bevidst flad og denormaliseret: hver række er en uafhængig
-/// historisk observation. Dette gør den brugbar både til ad hoc-queries
-/// fra rapport-værktøjer (Grafana Postgres-datasource, pg_dump-eksport)
-/// og til regression af AI-output, hvor man kan sammenligne nye modeller
-/// mod historiske klassifikationer for samme fri-tekst.
-/// </para>
-/// <para>
-/// <b>Idempotens.</b> <see cref="StopEventId"/> er unik på rækken (jf.
-/// indekset i <see cref="AlertingDbContext"/>), således at en eventuel
-/// genleverance af det samme event fra MassTransit's retry-pipeline ikke
-/// skaber dubletter.
-/// </para>
-/// </remarks>
+
 public sealed class ClassifiedStopReason
 {
     /// <summary>

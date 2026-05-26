@@ -35,18 +35,10 @@ try
         });
     });
 
-    // Database-per-Service: AiService er en stateless event-konsument der
-    // kun forholder sig til Gemini-HTTP og RabbitMQ — ingen DbContext, ingen
-    // Postgres-afhængighed i readiness-checket.
+    // AiService er stateless — ingen Postgres-afhængighed i readiness-checket.
     builder.Services.AddPlatformHealthChecks(builder.Configuration, requirePostgres: false);
 
-    // ----------------------------------------------------------------------
-    // Phase 4 – Gemini-integration.
-    //
-    // Sikkerhed: API-nøglen hentes UDELUKKENDE fra miljøvariablen
-    // GEMINI_API_KEY i selve klienten. Tilstedeværelsen logges som structured
-    // warning hvis nøglen mangler – selve værdien logges aldrig.
-    // ----------------------------------------------------------------------
+    // Gemini: API-nøgle hentes fra GEMINI_API_KEY, aldrig fra konfigurationsfiler.
     builder.Services.AddOptions<GeminiOptions>()
         .Bind(builder.Configuration.GetSection(GeminiOptions.SectionName));
 
@@ -65,24 +57,7 @@ try
         ? parsedTimeout
         : 15;
 
-    // ----------------------------------------------------------------------
-    // Phase 5 – Resilience.
-    //
-    // Polly anvendes via Microsoft.Extensions.Http.Resilience til at indkapsle
-    // HttpClient'en mod Gemini i en pipeline med (1) en eksponentiel
-    // Retry-strategi med jitter (3 forsøg) og (2) en Circuit Breaker, der
-    // åbner ved 50% fejlrate over et 30-sekunders sample-vindue. Strategien
-    // sikrer, at ai-service overlever transiente Gemini-udfald uden at
-    // crashe og uden at overbelaste et i forvejen ramt eksternt API.
-    //
-    // Hver retry- og breaker-tilstandsovergang logges som Serilog-event,
-    // hvilket gør hændelserne synlige i Loki/Grafana med felterne
-    // "Gemini.Resilience" og letter den evidens-baserede dokumentation
-    // af resilience-adfærden i bachelorrapporten.
-    //
-    // HttpClient.Timeout sættes bevidst højere end den indre timeout-budget,
-    // så Polly's egne retries når at afvikle inden for klient-timeouten.
-    // ----------------------------------------------------------------------
+    // Resilience: eksponentiel retry (3x) + circuit-breaker (50% fejlrate, 30s vindue).
     builder.Services
         .AddHttpClient(GeminiClassifier.HttpClientName, client =>
         {
@@ -178,9 +153,7 @@ try
             sp.GetRequiredService<ILogger<GeminiClassifier>>());
     });
 
-    // ----------------------------------------------------------------------
-    // Phase 4 – Messaging (consumer på OperatorCommentRegistered).
-    // ----------------------------------------------------------------------
+    // Messaging: consumer på OperatorCommentRegistered.
     builder.Services.AddPlatformMassTransit(builder.Configuration, mt =>
     {
         mt.AddConsumer<OperatorCommentRegisteredConsumer>();
@@ -234,14 +207,7 @@ finally
     Log.CloseAndFlush();
 }
 
-// ----------------------------------------------------------------------------
-// Hjælpefunktion til at klassificere et HTTP-svar som transient. Anvendes både
-// af Retry- og Circuit-Breaker-strategien i resilience-pipelinen ovenfor.
-// 408 Request Timeout, 429 Too Many Requests og 5xx-status betragtes som
-// midlertidige og udløser dermed retry/breaker. 4xx-fejl (bortset fra 408/429)
-// regnes som permanente og forbigår resilience-pipelinen, så fejlkonfigureret
-// API-nøgle eller ugyldig request-payload propageres uden unødige genforsøg.
-// ----------------------------------------------------------------------------
+// 408, 429 og 5xx betragtes som transiente — alt andet er permanent og bypass'er resilience.
 static bool IsTransientFailure(HttpResponseMessage response)
 {
     var status = (int)response.StatusCode;

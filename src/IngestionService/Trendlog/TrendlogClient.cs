@@ -13,16 +13,15 @@ using Microsoft.Extensions.Options;
 namespace IngestionService.Trendlog;
 
 /// <summary>
-/// Typed <see cref="HttpClient"/>-implementation af <see cref="ITrendlogClient"/>.
-/// Bemærk særligt:
+/// HTTP-klient mod Trendlog-API'et. Ikke-oplagte konventioner:
 /// <list type="bullet">
 ///   <item><description>Verbet er <c>POST</c> — ikke <c>GET</c>.</description></item>
-///   <item><description>Bearer-token sættes pr. request via <c>Authorization</c>-headeren.</description></item>
-///   <item><description><c>start</c> bindes til den nyeste dato og <c>end</c> til den ældste — modsat de fleste API-konventioner.</description></item>
-///   <item><description>Datoer formateres som <c>dd-MM-yyyy</c> (dansk dag-først), ikke ISO 8601.</description></item>
-///   <item><description>Bodyen er et JSON-array af feed-anmodninger (<see cref="TrendlogFeedRequest"/>).</description></item>
+///   <item><description><c>start</c> = nyeste dato, <c>end</c> = ældste — omvendt af standard.</description></item>
+///   <item><description>Datoformat: <c>dd-MM-yyyy</c> (ikke ISO 8601).</description></item>
+///   <item><description>Body: JSON-array af <see cref="TrendlogFeedRequest"/>.</description></item>
 /// </list>
 /// </summary>
+
 public sealed class TrendlogClient : ITrendlogClient
 {
     private const string TrendlogDateFormat = "dd-MM-yyyy";

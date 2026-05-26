@@ -18,51 +18,17 @@ export const options = {
     }
 };
 
-// Eksempel-payload der følger Trendlog-formatet for kanal XYZ01.
-// Aggregering: 'none' for runtime, 'diff' for stoptime — jf. afsnit 5.3.1.
-const samplePayload = {
-    channelId: 'XYZ01',
-    measurements: [
-        {
-            feed: 'XYZ01_runtime',
-            aggregation: 'none',
-            value: 1240,
-            timestamp: new Date().toISOString()
-        },
-        {
-            feed: 'XYZ01_stoptime',
-            aggregation: 'diff',
-            value: 35,
-            reason: 'Banestyringsfejl',
-            timestamp: new Date().toISOString()
-        },
-        {
-            feed: 'XYZ01_cnt',
-            aggregation: 'diff',
-            value: 482,
-            timestamp: new Date().toISOString()
-        },
-        {
-            feed: 'XYZ01_porder',
-            aggregation: 'none',
-            value: 'PO-10234',
-            target: 1000,
-            timestamp: new Date().toISOString()
-        }
-    ]
-};
-
-const sampleBatch = JSON.stringify(samplePayload);
-const baseUrl = __ENV.GATEWAY_BASE_URL || 'http://localhost:8080';
+// Tom body — servicen loader automatisk TestData/sample-batch.json
+// (kanal 20, korrekt integer-format). Jf. IngestionEndpoints.cs linje ~45.
+const baseUrl = __ENV.GATEWAY_BASE_URL || 'http://localhost:5000';
 
 export default function () {
     const correlationId = uuidv4();
     const res = http.post(
         `${baseUrl}/ingestion/simulate`,
-        sampleBatch,
+        null,
         {
             headers: {
-                'Content-Type': 'application/json',
                 'X-Correlation-Id': correlationId
             },
             tags: { endpoint: 'ingestion-simulate' }

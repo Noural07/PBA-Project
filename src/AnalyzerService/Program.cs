@@ -35,7 +35,7 @@ try
 
     builder.Services.AddPlatformHealthChecks(builder.Configuration);
 
-    // Phase 3 – persistens.
+    // persistens.
     var connectionString = builder.Configuration.GetConnectionString("Postgres")
         ?? "Host=postgres;Port=5432;Database=pba;Username=pba;Password=pba";
 
@@ -44,12 +44,12 @@ try
 
     builder.Services.AddHostedService<DatabaseInitializer>();
 
-    // Phase 3 – kritikalitetsregler.
+    // kritikalitetsregler.
     builder.Services.AddOptions<CriticalRuleOptions>()
         .Bind(builder.Configuration.GetSection(CriticalRuleOptions.SectionName));
     builder.Services.AddSingleton<CriticalRuleEvaluator>();
 
-    // Phase 3 – messaging.
+    // messaging.
     builder.Services.AddPlatformMassTransit(builder.Configuration, mt =>
     {
         mt.AddConsumer<MeasurementReceivedConsumer>();

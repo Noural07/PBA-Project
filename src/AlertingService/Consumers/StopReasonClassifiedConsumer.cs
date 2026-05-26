@@ -10,32 +10,10 @@ using Pba.Shared.Contracts.V1;
 namespace AlertingService.Consumers;
 
 /// <summary>
-/// Konsumerer <see cref="StopReasonClassified"/>-events fra RabbitMQ. Eventet
-/// persisteres først til Postgres som auditerbar log
-/// (<see cref="ClassifiedStopReason"/>) og beriger derefter den
-/// korresponderende konsoliderede alarm i ring-bufferen. Hvis den
-/// kritiske alarm endnu ikke er ankommet, oprettes en placeholder-række, der
-/// senere bliver komplet, når <c>CriticalAlertTriggered</c> arriverer for
-/// samme korrelations-ID.
+/// Konsumerer <see cref="StopReasonClassified"/>-events, persisterer dem til Postgres
+/// og beriger den korresponderende alarm i ring-bufferen.
 /// </summary>
-/// <remarks>
-/// <para>
-/// <b>Idempotens.</b> Tabellen <c>classified_stop_reasons</c> har et unikt
-/// indeks på <c>StopEventId</c>. Et duplikat-event (eksempelvis fra MassTransit's
-/// retry-pipeline) afvises derfor på databaseniveau med en
-/// <see cref="DbUpdateException"/>, som her fanges og logges som information,
-/// hvorefter ring-bufferen alligevel opdateres for at sikre at SSE-frontend'en
-/// modtager den seneste klassifikation.
-/// </para>
-/// <para>
-/// <b>Fejl-isolering.</b> Hvis Postgres er midlertidigt utilgængeligt,
-/// propageres exceptionen op i MassTransit's retry-pipeline (3 forsøg
-/// med eksponentiel backoff, jf. <c>MassTransitRegistration</c>). Først
-/// hvis alle retries fejler, sendes eventet til broker'ens dead-letter
-/// kø. Frontend'ens visning afhænger ikke af persistensens succes —
-/// ring-bufferen opdateres uafhængigt.
-/// </para>
-/// </remarks>
+
 public sealed class StopReasonClassifiedConsumer : IConsumer<StopReasonClassified>
 {
     private readonly AlertStore _store;

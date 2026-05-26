@@ -4,21 +4,9 @@ using System.Text.Json.Serialization;
 namespace AlertingService.Domain;
 
 /// <summary>
-/// Det konsoliderede alarm-projekt der eksponeres via SSE-streamen til
-/// frontend'en. Klassen er en flad, serialiserbar projektion, hvor en
-/// kritisk alarm fra <see cref="Pba.Shared.Contracts.V1.CriticalAlertTriggered"/>
-/// er sammenkoblet med den senest tilgængelige AI-klassifikation
-/// (<see cref="Pba.Shared.Contracts.V1.StopReasonClassified"/>) for samme
-/// <c>CorrelationId</c>.
+/// Flad SSE-projektion der kombinerer en kritisk alarm med dens AI-klassifikation via <c>CorrelationId</c>.
 /// </summary>
-/// <remarks>
-/// Klassen er bevidst designet som et <em>read-model</em>: den eneste hensigt
-/// er at servicere SSE-frontend'en og at dække Loki-loggens behov for
-/// strukturerede felter. Domæne-aggregaterne ejes af <c>AnalyzerService</c>
-/// og <c>AiService</c>; <c>AlertingService</c> opererer kun på events og
-/// projektioner. Auditerbar persistens af AI-klassifikationerne håndteres
-/// separat i <c>AlertingService.Persistence.ClassifiedStopReason</c>.
-/// </remarks>
+
 public sealed record ConsolidatedAlert
 {
     [JsonPropertyName("alertId")]

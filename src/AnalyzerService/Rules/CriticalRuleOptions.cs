@@ -3,19 +3,14 @@ using System.Collections.Generic;
 namespace AnalyzerService.Rules;
 
 /// <summary>
-/// Konfiguration for kritikalitetsreglerne i <c>AnalyzerService</c>.
-/// Værdierne kan overskrives via konfigurations-sektionen
-/// <c>Analyzer:Critical</c> eller via tilsvarende
-/// <c>Analyzer__Critical__*</c>-miljøvariable, så drift kan justere
-/// tærsklerne uden re-build.
+/// Konfiguration for kritikalitetsreglerne — kan overskrives via <c>Analyzer:Critical</c> eller miljøvariable.
 /// </summary>
 public sealed class CriticalRuleOptions
 {
     public const string SectionName = "Analyzer:Critical";
 
     /// <summary>
-    /// Tærskel i minutter for samlet nedetid i et tidsvindue. Overskridelse
-    /// udløser reglen <c>DowntimeExceedsThreshold</c>.
+    /// Samlet nedetid i minutter der udløser <c>DowntimeExceedsThreshold</c>.
     /// </summary>
     public int TotalDowntimeThresholdMinutes { get; set; } = 30;
 

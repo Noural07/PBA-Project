@@ -3,10 +3,7 @@ using System;
 namespace AiService.Gemini;
 
 /// <summary>
-/// Konfigurations-bindbar option-klasse for Gemini-integrationen. API-nøglen
-/// er bevidst <em>ikke</em> en del af denne klasse: den hentes udelukkende fra
-/// miljøvariablen <c>GEMINI_API_KEY</c> for at sikre, at hemmeligheder aldrig
-/// optræder i konfigurationsfiler eller logs.
+/// Konfigurationsindstillinger for Gemini-integrationen (API-nøgle hentes fra miljøvariabel, ikke herfra).
 /// </summary>
 public sealed class GeminiOptions
 {

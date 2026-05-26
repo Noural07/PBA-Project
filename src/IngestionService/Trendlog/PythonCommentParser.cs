@@ -5,41 +5,22 @@ using System.Text.RegularExpressions;
 namespace IngestionService.Trendlog;
 
 /// <summary>
-/// Resultatet af at parse et Trendlog <c>comment</c>-felt på formatet
-/// <c>{'category': 'Fault', 'comment': 'Product jam'}</c>.
-/// Hverken <see cref="Category"/> eller <see cref="Reason"/> er garanteret
-/// non-null; en operatør kan have udfyldt kun det ene felt.
+/// Resultat af at parse et Trendlog <c>comment</c>-felt på Python-dict-format.
+/// Hverken <see cref="Category"/> eller <see cref="Reason"/> er garanteret non-null.
 /// </summary>
-/// <param name="Category">Den parsed kategori (fx <c>Fault</c>) eller <c>null</c>.</param>
-/// <param name="Reason">Operatørens fri-tekst-årsag (Trendlog-feltet <c>comment</c>) eller <c>null</c>.</param>
-/// <param name="ParseSucceeded">
-/// <c>true</c> hvis mindst ét af felterne <c>category</c> eller <c>comment</c>
-/// blev udtrukket. <c>false</c> ved tom string, malformeret input eller
-/// rå-string der ikke ligner en Python-dict.
-/// </param>
+
 public readonly record struct PythonCommentResult(string? Category, string? Reason, bool ParseSucceeded)
 {
     public static PythonCommentResult Empty { get; } = new(null, null, false);
 }
 
 /// <summary>
-/// Parser for Trendlog's <c>comment</c>-felt, der leveres som en
-/// stringificering af et Python-dict — <em>ikke</em> som gyldig JSON.
-/// Eksempel på input:
-/// <code>{'category': 'Fault', 'comment': 'Product jam'}</code>
-/// <para>
-/// Parseren er bevidst defensiv. Den må ikke kaste exceptions for malformeret
-/// input, da Trendlog ikke garanterer en konsistent skemafølgning på fri-tekst-
-/// kommentarer. Strategien er regex-baseret matchning af nøgle-/værdipar:
-/// </para>
+/// Parser Trendlogs <c>comment</c>-felt, der leveres som en Python-dict-stringificering — ikke gyldig JSON.
+/// Eksempel: <code>{'category': 'Fault', 'comment': 'Product jam'}</code>
 /// <list type="bullet">
-/// <item><description>Begge værdi-citationsmønstre understøttes (single og double),
-/// hvilket dækker både den canoniske Python <c>repr</c> og det tilfælde hvor
-/// en apostrof i værdien får Python til at switche til double-quotes.</description></item>
-/// <item><description>Escapede citationstegn (<c>\'</c>, <c>\"</c>) un-escapes,
-/// således at en operatørs <c>don't</c> bevares som <c>don't</c>.</description></item>
-/// <item><description>Ukendte nøgler ignoreres, så fremtidige Trendlog-felter
-/// (fx <c>severity</c>) ikke bryder pipelinen.</description></item>
+///   <item><description>Understøtter single- og double-quote værdier.</description></item>
+///   <item><description>Un-escaper <c>\'</c> og <c>\"</c> i værdier.</description></item>
+///   <item><description>Ukendte nøgler ignoreres.</description></item>
 /// </list>
 /// </summary>
 public static class PythonCommentParser
